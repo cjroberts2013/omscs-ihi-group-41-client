@@ -1,7 +1,7 @@
 export default function page() {
     return (
         <div>
-            Home
+            Recording
         </div>
     )
 }
