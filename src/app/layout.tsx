@@ -12,9 +12,10 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { Bars3Icon } from '@heroicons/react/24/outline'
 import GTLogo from '../../public/gt.png'
 import Image from 'next/image'
+import Link from 'next/link';
 
 const navigation = [
-    { name: 'Home', href: '/', icon: HomeIcon, current: true },
+    { name: 'Home', href: '/', icon: HomeIcon, current: false },
     { name: 'Patient Data', href: '/patient', icon: UsersIcon, current: false },
     { name: 'Voice Recording', href: '/recording', icon: MicrophoneIcon, current: false }
     // { name: 'Dev', href: '/dev', icon: MicrophoneIcon, current: false }
@@ -45,6 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 const [sidebarOpen, setSidebarOpen] = useState(false)
+const [currentMenu, setCurrentMenu] = useState("Home")
 
 return (
     <html className="h-full bg-white">
@@ -96,10 +98,11 @@ return (
                                         <ul role="list" className="-mx-2 space-y-1">
                                             {navigation.map((item) => (
                                                 <li key={item.name}>
-                                                    <a
+                                                    <Link
+                                                        onClick={() => {setCurrentMenu(item.name)}}
                                                         href={item.href}
                                                         className={classNames(
-                                                            item.current
+                                                            item.name == currentMenu
                                                                 ? 'bg-gray-800 text-white'
                                                                 : 'text-gray-400 hover:bg-gray-800 hover:text-white',
                                                             'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
@@ -107,7 +110,7 @@ return (
                                                     >
                                                         <item.icon aria-hidden="true" className="size-6 shrink-0"/>
                                                         {item.name}
-                                                    </a>
+                                                    </Link>
                                                 </li>
                                             ))}
                                         </ul>
@@ -136,10 +139,11 @@ return (
                                 <ul role="list" className="-mx-2 space-y-1">
                                     {navigation.map((item) => (
                                         <li key={item.name}>
-                                            <a
+                                            <Link
+                                                onClick={() => {setCurrentMenu(item.name)}}
                                                 href={item.href}
                                                 className={classNames(
-                                                    item.current
+                                                    item.name == currentMenu
                                                         ? 'bg-gray-800 text-white'
                                                         : 'text-gray-400 hover:bg-gray-800 hover:text-white',
                                                     'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
@@ -147,7 +151,7 @@ return (
                                             >
                                                 <item.icon aria-hidden="true" className="size-6 shrink-0"/>
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -174,4 +178,4 @@ return (
     </>
     </body>
     </html>
-    )
+)
