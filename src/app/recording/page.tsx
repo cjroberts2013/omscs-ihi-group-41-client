@@ -17,20 +17,20 @@ export default function page() {
         // }).then((res) => res.json());
         // alert(JSON.stringify(`${res.message}, status: ${res.status}`));
 
-        var data = new FormData();
-        var audioFile = {AudioFile};
-        data.append("file", audioFile);
-
-        fetch("http://45.79.210.59:8000/medical-summary-audio", {
-            mode: 'no-cors',
-            method: "POST",
-            headers: {
-                "Content-Type": "multipart/form-data",
-                "Accept": "application/json",
-                "type": "formData"
-            },
-            body: data
-        })
+        // var data = new FormData();
+        // var audioFile = {AudioFile};
+        // data.append("file", audioFile);
+        //
+        // fetch("http://45.79.210.59:8000/medical-summary-audio", {
+        //     mode: 'no-cors',
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "multipart/form-data",
+        //         "Accept": "application/json",
+        //         "type": "formData"
+        //     },
+        //     body: data
+        // })
 
 
 
