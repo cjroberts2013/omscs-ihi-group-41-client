@@ -13,12 +13,12 @@ export default function page() {
 
         </p>  
         <ul className="mt-4 text-left text-lg list-disc pl-6">
-          <li>Open the web application</li>
-          <li>Click the "Record" button</li>
-          <li>The application works in the background recording the conversation</li>
-          <li>The recording is submitted to ChatGPT</li>
-          <li>Structured data is created and displyed for the provider to review</li>
-          <li>With the simple click of a button the reviewed data is submitted to the FHIR server</li>
+          <li>Opens the web application</li>
+          <li>Clicks the "Record" button</li>
+          <li>The application starts working in the background recording the conversation</li>
+          <li>The recording is submitted to ChatGPT through backend processes in the application</li>
+          <li>The application returns structured data for the provider to review</li>
+          <li>Then with the simple click of a button the reviewed data is submitted to the FHIR server</li>
         </ul>  
       </main>
      
