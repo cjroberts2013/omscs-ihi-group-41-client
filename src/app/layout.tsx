@@ -18,7 +18,6 @@ const navigation = [
     { name: 'Home', href: '/', icon: HomeIcon, current: false },
     { name: 'Patient Data', href: '/patient', icon: UsersIcon, current: false },
     { name: 'Voice Recording', href: '/recording', icon: MicrophoneIcon, current: false }
-    // { name: 'Dev', href: '/dev', icon: MicrophoneIcon, current: false }
 ]
 
 function classNames(...classes) {
@@ -52,14 +51,6 @@ export default function RootLayout({
         <html className="h-full bg-white">
             <body className="h-full">
                 <>
-                    {/*
-                    This example requires updating your template:
-
-                    ```
-                    <html class="h-full bg-white">
-                    <body class="h-full">
-                    ```
-                  */}
                     <div>
                         <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
                             <DialogBackdrop
