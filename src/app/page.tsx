@@ -9,7 +9,7 @@ export default function page() {
           The goal of this project is to create efficiency in work-flow for medical providers when interacting with patients. To accomplish this task, our team developed a web-based application, allowing medical providers to direct their attention to interacting with the patient. While this interaction takes place, health related data is be captured in the background. Since the patient information is captured in the background the provider is no longer required to focus their attention on a screen and the patient at the same time. This increased focus on interacting with the patient helps in building rapport, leading to the patient gaining trust in the medical provider.
         </p>
         <p className="mt-4 text-left text-lg">
-        To record the interaction the provider:
+        To record the interaction the provider should:
 
         </p>  
         <ul className="mt-4 text-left text-lg list-disc pl-6">
