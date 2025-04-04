@@ -17,8 +17,8 @@ export default function page() {
           <li> Select the "Voice Recording" tab</li>
           <li>Click the "Record" button to begin recording the interaction</li>
           <li>The application works in the background recording the conversation</li>
-          <li>The recording is submitted to ChatGPT</li>
-          <li>Structured data is created and displayed for the provider to review</li>
+          <li>The recording is submitted to ChatGPT utilizing backend processes</li>
+          <li>Structured data is created and returned for the provider to review</li>
           <li>With the simple click of a button the reviewed data is submitted to the FHIR server</li>
           <li>To review patient data click on the "Patient Data" tab and select the patient you want to review</li>
         </ul>  
