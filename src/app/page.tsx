@@ -14,12 +14,13 @@ export default function page() {
         </p>  
         <ul className="mt-4 text-left text-lg list-disc pl-6">
           <li>Open the web application</li>
-          <li>Click the "Record" button</li>
+          <li> Select the "Voice Recording" tab</li>
+          <li>Click the "Record" button to begin recording the interaction</li>
           <li>The application works in the background recording the conversation</li>
           <li>The recording is submitted to ChatGPT</li>
           <li>Structured data is created and displayed for the provider to review</li>
           <li>With the simple click of a button the reviewed data is submitted to the FHIR server</li>
-          <li>To review patient data click on the patient data tab and select the patient you want to review</li>
+          <li>To review patient data click on the "Patient Data" tab and select the patient you want to review</li>
         </ul>  
       </main>
      
