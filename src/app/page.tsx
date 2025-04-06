@@ -9,16 +9,18 @@ export default function page() {
           The goal of this project is to create efficiency in work-flow for medical providers when interacting with patients. To accomplish this task, our team developed a web-based application, allowing medical providers to direct their attention to interacting with the patient. While this interaction takes place, health related data is be captured in the background. Since the patient information is captured in the background the provider is no longer required to focus their attention on a screen and the patient at the same time. This increased focus on interacting with the patient helps in building rapport, leading to the patient gaining trust in the medical provider.
         </p>
         <p className="mt-4 text-left text-lg">
-        To record the interaction the provider:
+        To record the interaction the provider should:
 
         </p>  
         <ul className="mt-4 text-left text-lg list-disc pl-6">
           <li>Open the web application</li>
-          <li>Click the "Record" button</li>
+          <li> Select the "Voice Recording" tab</li>
+          <li>Click the "Record" button to begin recording the interaction</li>
           <li>The application works in the background recording the conversation</li>
-          <li>The recording is submitted to ChatGPT</li>
-          <li>Structured data is created and displyed for the provider to review</li>
+          <li>The recording is submitted to ChatGPT utilizing backend processes</li>
+          <li>Structured data is created and returned for the provider to review</li>
           <li>With the simple click of a button the reviewed data is submitted to the FHIR server</li>
+          <li>To review patient data click on the "Patient Data" tab and select the patient you want to review</li>
         </ul>  
       </main>
      
