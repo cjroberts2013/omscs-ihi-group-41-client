@@ -1,31 +1,246 @@
 "use client";
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from "next/navigation";
 
+type Patient = {
+    id: number;
+    name: string;
+    dob: string;
+    age: number;
+    gender: string;
+    maritalStatus: string;
+    allergy: string;
+    medication: string;
+    medDosage: string;
+    condition: string;
+    alcohol: string;
+    smoker: string;
+    temperature: string;
+    bloodPressure: string;
+    oxygenSaturation: string;
+    symptoms: string;
+    recommendedFollowups: string;
+    transcript: string;
+  };
+  
 export default function PatientPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedGender, setSelectedGender] = useState("");
     const [selectedCondition, setSelectedCondition] = useState("");
 
-    const patients = [
+    const patient_list = [
         { id: 1, name: "John Doe", dob: "03/01/1980", age: 45, gender: "Male", maritalStatus: "Unknown", allergy: "None", medication: "Lipitor", medDosage: "20 mg", condition: "Hypertension", alcohol: "Frequently", smoker: "Occasionally", temperature: "97", bloodPressure: "130/20", oxygenSaturation: "97%", symptoms: "Sore throat", recommendedFollowups: "Rest, cough syrup" },
         { id: 2, name: "Jane Smith", dob: "02/17/1973", age: 52, gender: "Female", maritalStatus: "Married", allergy: "Seafood, Peanuts", medication: "Tylenol, Diabetes Medicine", medDosage: "Unknown", condition: "Diabetes", alcohol: "Occasionally", smoker: "Never", temperature: "101", bloodPressure: "120/80", oxygenSaturation: "98%", symptoms: "Fever, Runny nose", recommendedFollowups: "Rest, antibiotics, flu shot" }
     ];
 
     // Get unique conditions and genders for dropdown filters
-    const conditions = Array.from(new Set(patients.map((p) => p.condition)));
-    const genders = Array.from(new Set(patients.map((p) => p.gender)));
+    const conditions = Array.from(new Set(patient_list.map((p) => p.condition)));
+    const genders = Array.from(new Set(patient_list.map((p) => p.gender)));
 
     // Filter logic
-    const filteredPatients = patients.filter((patient) =>
+    const filteredPatients = patient_list.filter((patient) =>
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (selectedGender === "" || patient.gender === selectedGender) &&
         (selectedCondition === "" || patient.condition === selectedCondition)
     );
 
+    // Separator for Smita's code and mine ----->
+    const router = useRouter();
+    const [patient, setPatient] = useState<Patient[]>([]);
+    const [response, setResponse] = useState<string | null>(null);
+    const [showTranscript, setShowTranscript] = useState(false);
+    const [editingCell, setEditingCell] = useState<{ id: number; field: keyof Patient } | null>(null);
+    const [editValue, setEditValue] = useState<string>("");
+    
+
+    useEffect(() => {
+        const stored = localStorage.getItem("medicalSummary");
+        if (stored) {
+            setResponse(stored);
+        }
+    }, []);
+
+    // We need to massage the 'response' object here to generate the table below:
+    console.log("THIS IS THE RESPONSE FROM THE BACKEND:")
+    console.log(response)
+
+    useEffect(() => {
+        const patientData = localStorage.getItem("medicalSummary");
+        if (!patientData) return; // nothing to parse
+      
+        try {
+          const parsedData = JSON.parse(patientData);
+          // Check if the required structure exists
+          if (!parsedData?.medical_facts) return;
+      
+          const facts = parsedData.medical_facts;
+          // Validate required fields exist
+          if ( !facts.patientName || !facts.dob || !facts.age || !facts.gender) {
+            console.warn("Missing essential patient data");
+            return;
+          }
+      
+          const patientDataMapped: Patient = {
+            id: 1, // you can generate a dynamic ID if needed
+            name: facts.patientName,
+            dob: facts.dob,
+            age: facts.age,
+            gender: facts.gender.charAt(0).toUpperCase() + facts.gender.slice(1),
+            maritalStatus: facts.maritalStatus || "Unknown",
+            allergy: facts.allergy || "None",
+            medication: facts.medication || "None",
+            medDosage: facts.medDosage || "Unknown",
+            condition: facts.condition || "None",
+            alcohol: facts.alcoholUse || "Unknown",
+            smoker: facts.smokingStatus || "Unknown",
+            temperature: facts.temperature || "N/A",
+            bloodPressure: facts.bloodPressure || "N/A",
+            oxygenSaturation: facts.oxygenSaturation || "N/A",
+            symptoms: Array.isArray(facts.symptoms) ? facts.symptoms.join(", ") : "",
+            recommendedFollowups: facts.recommendedFollowUps || "None",
+            transcript: facts.full_transcript || "",
+          };
+      
+          setPatient([patientDataMapped]);
+          setResponse(patientData); // optional: you can keep or remove this
+        } catch (err) {
+          console.error("Failed to parse medicalSummary:", err);
+        }
+      }, []);
+
+      const handleSave = (id: number, field: keyof Patient) => {
+        setPatient((prev) =>
+          prev.map((patient) =>
+            patient.id === id ? { ...patient, [field]: editValue } : patient
+          )
+        );
+        setEditingCell(null); // Close the editor
+        setEditValue(""); // Reset input field
+      };
+
+      const handleConfirm = (patient: Patient) => {
+        // Send patient data to backend to be stored in db
+        console.log("Preparing to send data to db")
+        fetch("https://45.79.210.59:8000/store-medical-record", {
+        // fetch("http://localhost:8000/store-medical-record", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(patient),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert("Patient confirmed!");
+            // backend response: 
+            console.log(data)
+            router.push("/");
+          })
+          .catch((error) => {
+            console.error("Error confirming patient:", error);
+          });
+      };      
+
+      const renderCell = (patient: Patient, field: keyof Patient) => {
+        if (editingCell?.id === patient.id && editingCell.field === field) {
+          return (
+            <input className="w-full p-1 border rounded" autoFocus type="text" value={editValue} // Controlled input
+              onChange={(e) => setEditValue(e.target.value)} // Update input field
+              onBlur={() => handleSave(patient.id, field)} // Save on blur
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSave(patient.id, field); // Save on Enter key
+                }
+              }}
+            />
+          );
+        } else {
+          return (
+            <span
+              className="cursor-pointer"
+              onClick={() => {
+                setEditingCell({ id: patient.id, field });
+                setEditValue(String(patient[field])); // Populate input with current value
+              }}
+            >
+              {String(patient[field])}
+            </span>
+          );
+        }    
+      };
+      
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-bold mb-6 text-center">Patient Data</h1>
-
+            <h2 className="text-2xl font-bold mb-6 text-center">Most Recent Interaction:</h2>
+            <div className="overflow-x-auto">
+            {/* {response && (
+            <div className="my-4 p-4 bg-gray-100 border rounded">
+              <h2 className="text-lg font-semibold mb-2">Raw Response</h2>
+              <pre className="whitespace-pre-wrap break-words text-sm bg-white p-2 rounded border overflow-auto max-h-96">
+                {response}
+              </pre>
+            </div>
+            )} */}
+            <table className="table-auto w-full border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-500 text-white">
+                  <th className="border p-2">Verify</th>
+                  {patient.length > 0 &&
+                    Object.keys(patient[0]).map((key) =>
+                      key === "transcript" ? (
+                        <th
+                          key={key}
+                          className="border p-2 capitalize cursor-pointer bg-gray-600 hover:bg-gray-700"
+                          onClick={() => setShowTranscript(!showTranscript)}
+                        >
+                          {showTranscript ? "Hide Transcript" : "Show Full Transcript"}
+                        </th>
+                      ) : (
+                        <th key={key} className="border p-2 capitalize">
+                          {key}
+                        </th>
+                      )
+                    )}
+                </tr>
+              </thead>
+              <tbody>
+              {patient.map((p) => (
+                <tr key={p.id} className="border-t">
+                  <td className="border p-2 text-center">
+                  <button onClick={() => handleConfirm(p)} className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
+                    Confirm</button>
+                  </td>
+                  {Object.entries(p).map(([key, value]) =>
+                    key === "transcript" ? (
+                      showTranscript && (
+                        <td key={key} className="border p-2 whitespace-pre-wrap">
+                          {renderCell(p, key as keyof Patient)}
+                        </td>
+                      )
+                    ) : (
+                      <td key={key} className="border p-2">
+                        {renderCell(p, key as keyof Patient)}
+                      </td>
+                    )
+                  )}
+                </tr>
+              ))}
+            </tbody>
+            </table>
+            <div className="mt-4 flex justify-center">
+          <button
+            onClick={() => {localStorage.removeItem("medicalSummary"); setPatient([]);
+              setResponse(null);
+              alert("Patient data has been reset.");
+              router.push("/recording");
+            }}className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Start over and Re-record </button>
+         </div>
+            </div>
+            <br/>
+            
+            {/* THIS PART RIGHT HERE CAN BE FETCHED FROM A DB:  */}
+            <h2 className="text-2xl font-bold mb-6 text-center">Saved and Confirmed Interaction(s):</h2>
             {/* Filters Section */}
             <div className="mb-6 flex flex-wrap gap-4 justify-center">
                 <input
@@ -60,7 +275,6 @@ export default function PatientPage() {
                     ))}
                 </select>
             </div>
-
             {/* Patient Table */}
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300 shadow-lg bg-white">
