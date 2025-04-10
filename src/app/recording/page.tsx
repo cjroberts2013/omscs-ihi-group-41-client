@@ -117,80 +117,95 @@ export default function Page() {
 
     return (
         <div className="App">
-        <div className="mt-6 mb-8 text-base text-gray-700 bg-gray-100 p-5 rounded-md shadow-sm ring-1 ring-gray-300 leading-relaxed">
-          <p className="mb-3 font-semibold">To submit your recorded interaction, you have two options:</p>
-          <ol className="list-decimal list-inside space-y-2">
-            <li>
-              Click the <span className="text-red-600 font-semibold inline-flex items-center">
-                red icon <MicrophoneIcon className="ml-1 inline-block h-5 w-5 text-red-600" />
-              </span> to record your interaction from the app.
-            </li>
-            <li>
-              Click the <span className="font-semibold text-gray-800">"Click here to upload a file"</span> button and select a file to upload from your device.
-            </li>
-          </ol>
-          <p className="mt-4">
-            Once done, look for the <span className="text-green-600 font-semibold">green confirmation</span> indicating your audio is ready.
-            Then, click <span className="font-semibold text-gray-800">"Process Recording"</span> to submit.
-            Lastly, when the system processes the request, you will be redirected to the
-            <a href="/patient" className="text-blue-600 underline font-medium ml-1">Patient</a> view with the details.
-          </p>
-        </div>  
             <div
-                className="mt-2 flex justify-center rounded-lg px-6 py-10">
-                <div className="text-center">
+                className="mt-6 mb-8 text-base text-gray-700 bg-gray-100 p-5 rounded-md shadow-sm ring-1 ring-gray-300 leading-relaxed">
+                <p className="mb-3 font-semibold">To submit your recorded interaction, you have two options:</p>
+                <ol className="list-decimal list-inside space-y-2">
+                    <li>
+                        Click the <span className="text-red-600 font-semibold inline-flex items-center">
+                    red icon <MicrophoneIcon className="ml-1 inline-block h-5 w-5 text-red-600"/>
+                  </span> to record your interaction from the app.
+                    </li>
+                    <li>
+                        Click the <span
+                        className="font-semibold text-gray-800">"Click here to upload a file"</span> button and select a
+                        file to upload from your device.
+                    </li>
+                </ol>
+                <p className="mt-4">
+                    Once done, look for the <span
+                    className="text-green-600 font-semibold">green confirmation</span> indicating your audio is ready.
+                    Then, click <span className="font-semibold text-gray-800">"Process Recording"</span> to submit.
+                    Lastly, when the system processes the request, you will be redirected to the
+                    <a href="/patient" className="text-blue-600 underline font-medium ml-1">Patient</a> view with the
+                    details.
+                </p>
+            </div>
+
+            <div
+                className="mt-6 mb-8 text-base text-gray-700 bg-gray-100 p-5 rounded-md shadow-sm ring-1 ring-gray-300 leading-relaxed">
+                <div className="flex items-center justify-items-start p-8 bg-white rounded-md">
                     <button type={"button"}
                             onClick={ToggleMic}
-                            className="rounded-lg bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                            className="rounded-md bg-red-600 px-2.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
                         {isRecording ? (
-                        <StopIcon aria-hidden="true" className="mx-auto size-12 text-white" />
-                         ) : (
-                        <MicrophoneIcon aria-hidden="true" className="mx-auto size-12 text-white" />
+                            <StopIcon aria-hidden="true" className="mx-auto size-10 text-white"/>
+                        ) : (
+                            <MicrophoneIcon aria-hidden="true" className="mx-auto size-10 text-white"/>
                         )}
                     </button>
 
-                    <audio className="playback mt-4 mb-12" controls src={playbackSource}></audio>
-                    {playbackSource && !isRecording && recordingStoppedAt && (
-                      <p className="text-sm text-green-600 mb-8">
+                    <audio className="playback ml-3" controls src={playbackSource}></audio>
+                </div>
+
+                {playbackSource && !isRecording && recordingStoppedAt && (
+                    <p className="text-md text-green-600 pt-5">
                         🎤 Recorded audio at{" "}
-                        <strong>{recordingStoppedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong>{" "}
+                        <strong>{recordingStoppedAt.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        })}</strong>{" "}
                         is ready for submission.
-                      </p>
-                    )}
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <label
-                            htmlFor="audio-file"
-                            className="mt-12 mb-12 rounded-md px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-2 ring-inset ring-gray-400 bg-gray-100 hover:bg-gray-200"
-                        >
-                            <span className="">Click here to upload a file</span>
-                            <input id="audio-file" type="file" {...register("file")} accept="audio/*" className="sr-only"
-                                onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    setSelectedFileName(file.name);
-                                } else {
-                                    setSelectedFileName(null);
-                                }
-                              }}/>
-                        </label>
-                        <p className="mt-4 text-xs/5 text-gray-600">M4A, MP3, WAV, etc...</p>
-                        {selectedFileName && (
-                        <p className="mt-4 text-sm text-green-600">
+                    </p>
+                )}
+
+                <form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
+                    <label
+                        htmlFor="audio-file"
+                        className="mt-5 rounded-md bg-gray-900 px-3.5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grey-600"
+                    >
+                        <span className="">Click here to upload an audio file</span>
+                        <input id="audio-file" type="file" {...register("file")} accept="audio/*"
+                               className="sr-only"
+                               onChange={(e) => {
+                                   const file = e.target.files?.[0];
+                                   if (file) {
+                                       setSelectedFileName(file.name);
+                                   } else {
+                                       setSelectedFileName(null);
+                                   }
+                               }}/>
+                    </label>
+
+                    <p className="mt-5 text-xs/5 text-gray-600">M4A, MP3, WAV, etc...</p>
+
+                    {selectedFileName && (
+                        <p className="pt-5 text-md text-green-600">
                             Selected file: <strong>{selectedFileName}</strong>
                         </p>
-                        )}
-                        <button type="submit"
-                                className="mt-8 rounded-md bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grey-600"
-                                disabled={loading || isRecording || (!selectedFileName && !playbackSource)}>
-                            {loading ? "Processing..." : "Process Recording"}
-                        </button>
+                    )}
 
-                    </form>
-                </div>
+                    <button type="submit"
+                            className="mt-5 rounded-md bg-gray-900 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grey-600"
+                            disabled={loading || isRecording || (!selectedFileName && !playbackSource)}>
+                        {loading ? "Processing..." : "Process Recording"}
+                    </button>
+
+                </form>
+
+                {loading && <p className="pt-5">Uploading file, please wait...</p>} {/* Show message while uploading */}
+                {error && <p className="pt-5" style={{color: "red"}}>{error}</p>}
             </div>
-
-            {loading && <p>Uploading file, please wait...</p>} {/* Show message while uploading */}
-            {error && <p style={{color: "red"}}>{error}</p>}
         </div>
     );
 }
