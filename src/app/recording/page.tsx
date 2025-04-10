@@ -99,9 +99,7 @@ export default function Page() {
                 method: "POST",
                 body: formData,
             });
-
             const result = await res.json();
-
             if (res.ok) {
                 const resultString = JSON.stringify(result, null, 2);
                 localStorage.setItem("medicalSummary", resultString);
