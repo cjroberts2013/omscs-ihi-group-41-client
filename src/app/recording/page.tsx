@@ -94,8 +94,8 @@ export default function Page() {
           }
 
         try {
-            // const res = await fetch("https://45.79.210.59:8000/medical-summary-audio", {
-            const res = await fetch("http://localhost:8000/medical-summary-audio", {                
+            const res = await fetch("https://45.79.210.59:8000/medical-summary-audio", {
+            // const res = await fetch("http://localhost:8000/medical-summary-audio", {                
                 method: "POST",
                 body: formData,
             });
