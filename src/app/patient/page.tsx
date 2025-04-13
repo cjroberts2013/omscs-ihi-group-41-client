@@ -4,44 +4,61 @@ import { useRouter } from "next/navigation";
 
 type Patient = {
     id: number;
-    name: string;
+    patient_name: string;
     dob: string;
     age: number;
     gender: string;
-    maritalStatus: string;
+    marital_status: string;
     allergy: string;
     medication: string;
-    medDosage: string;
-    condition: string;
-    alcohol: string;
-    smoker: string;
+    med_dosage: string;
+    conditions: string;
+    alcohol_use: string;
+    smoking_status: string;
     temperature: string;
-    bloodPressure: string;
-    oxygenSaturation: string;
+    blood_pressure: string;
+    oxygen_saturation: string;
     symptoms: string;
-    recommendedFollowups: string;
-    transcript: string;
+    recommended_followups: string;
+    full_transcript: string;
   };
   
 export default function PatientPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedGender, setSelectedGender] = useState("");
     const [selectedCondition, setSelectedCondition] = useState("");
+    const [confirmedPatients, setConfirmedPatients] = useState<Patient[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const patient_list = [
-        { id: 1, name: "John Doe", dob: "03/01/1980", age: 45, gender: "Male", maritalStatus: "Unknown", allergy: "None", medication: "Lipitor", medDosage: "20 mg", condition: "Hypertension", alcohol: "Frequently", smoker: "Occasionally", temperature: "97", bloodPressure: "130/20", oxygenSaturation: "97%", symptoms: "Sore throat", recommendedFollowups: "Rest, cough syrup" },
-        { id: 2, name: "Jane Smith", dob: "02/17/1973", age: 52, gender: "Female", maritalStatus: "Married", allergy: "Seafood, Peanuts", medication: "Tylenol, Diabetes Medicine", medDosage: "Unknown", condition: "Diabetes", alcohol: "Occasionally", smoker: "Never", temperature: "101", bloodPressure: "120/80", oxygenSaturation: "98%", symptoms: "Fever, Runny nose", recommendedFollowups: "Rest, antibiotics, flu shot" }
-    ];
+
+    // const patient_list = [
+    //     { id: 1, name: "John Doe", dob: "03/01/1980", age: 45, gender: "Male", maritalStatus: "Unknown", allergy: "None", medication: "Lipitor", medDosage: "20 mg", condition: "Hypertension", alcohol: "Frequently", smoker: "Occasionally", temperature: "97", bloodPressure: "130/20", oxygenSaturation: "97%", symptoms: "Sore throat", recommendedFollowups: "Rest, cough syrup" },
+    //     { id: 2, name: "Jane Smith", dob: "02/17/1973", age: 52, gender: "Female", maritalStatus: "Married", allergy: "Seafood, Peanuts", medication: "Tylenol, Diabetes Medicine", medDosage: "Unknown", condition: "Diabetes", alcohol: "Occasionally", smoker: "Never", temperature: "101", bloodPressure: "120/80", oxygenSaturation: "98%", symptoms: "Fever, Runny nose", recommendedFollowups: "Rest, antibiotics, flu shot" }
+    // ];
 
     // Get unique conditions and genders for dropdown filters
-    const conditions = Array.from(new Set(patient_list.map((p) => p.condition)));
-    const genders = Array.from(new Set(patient_list.map((p) => p.gender)));
+    // const conditions = Array.from(new Set(patient_list.map((p) => p.condition)));
+    // const genders = Array.from(new Set(patient_list.map((p) => p.gender)));
 
-    // Filter logic
-    const filteredPatients = patient_list.filter((patient) =>
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    // // Filter logic
+    // const filteredPatients = patient_list.filter((patient) =>
+    //     patient.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    //     (selectedGender === "" || patient.gender === selectedGender) &&
+    //     (selectedCondition === "" || patient.condition === selectedCondition)
+    // );
+
+    const conditions = Array.from(new Set(confirmedPatients.map((p) => p.conditions)));
+    const genders = Array.from(new Set(confirmedPatients.map((p) => p.gender)));
+    
+    // const filteredPatients = confirmedPatients.filter((patient) =>
+    //   patient.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    //   (selectedGender === "" || patient.gender === selectedGender) &&
+    //   (selectedCondition === "" || patient.condition === selectedCondition)
+    // );
+    const filteredPatients = confirmedPatients.filter((patient) =>
+        (patient.patient_name ?? "").toLowerCase().includes(searchTerm.toLowerCase()) &&  // default to empty string if null
         (selectedGender === "" || patient.gender === selectedGender) &&
-        (selectedCondition === "" || patient.condition === selectedCondition)
+        (selectedCondition === "" || patient.conditions === selectedCondition)
     );
 
     // Separator for Smita's code and mine ----->
@@ -54,18 +71,36 @@ export default function PatientPage() {
     
 
     useEffect(() => {
-        const stored = localStorage.getItem("medicalSummary");
+        const stored = localStorage.getItem("medical_facts");
         if (stored) {
             setResponse(stored);
         }
     }, []);
 
+
+    useEffect(() => {
+        // Fetch data from your backend
+        // fetch("https://45.79.210.59:8000/get-medical-records") // or http://localhost:8000
+          fetch("http://localhost:8000/get-medical-records")
+          .then(response => response.json())
+          .then(data => {
+            console.log('Backend response:', data);
+            setConfirmedPatients(data.records); // Assuming your backend returns a `records` key
+          })
+          .catch((error) => {
+            console.error('Error fetching records:', error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }, []);
+
     // We need to massage the 'response' object here to generate the table below:
-    console.log("THIS IS THE RESPONSE FROM THE BACKEND:")
+    console.log("Patient response from backend:")
     console.log(response)
 
     useEffect(() => {
-        const patientData = localStorage.getItem("medicalSummary");
+        const patientData = localStorage.getItem("medical_facts");
         if (!patientData) return; // nothing to parse
       
         try {
@@ -74,37 +109,38 @@ export default function PatientPage() {
           if (!parsedData?.medical_facts) return;
       
           const facts = parsedData.medical_facts;
+          
           // Validate required fields exist
-          if ( !facts.patientName || !facts.dob || !facts.age || !facts.gender) {
+          if ( !facts.patient_name || !facts.dob || !facts.age || !facts.gender) {
             console.warn("Missing essential patient data");
             return;
           }
       
           const patientDataMapped: Patient = {
             id: 1, // you can generate a dynamic ID if needed
-            name: facts.patientName,
+            patient_name: facts.patientName,
             dob: facts.dob,
             age: facts.age,
             gender: facts.gender.charAt(0).toUpperCase() + facts.gender.slice(1),
-            maritalStatus: facts.maritalStatus || "Unknown",
+            marital_status: facts.marital_status || "Unknown",
             allergy: facts.allergy || "None",
             medication: facts.medication || "None",
-            medDosage: facts.medDosage || "Unknown",
-            condition: facts.condition || "None",
-            alcohol: facts.alcoholUse || "Unknown",
-            smoker: facts.smokingStatus || "Unknown",
+            med_dosage: facts.med_dosage || "Unknown",
+            conditions: facts.condition || "None",
+            alcohol_use: facts.alcohol_use || "Unknown",
+            smoking_status: facts.smoking_status || "Unknown",
             temperature: facts.temperature || "N/A",
-            bloodPressure: facts.bloodPressure || "N/A",
-            oxygenSaturation: facts.oxygenSaturation || "N/A",
+            blood_pressure: facts.blood_pressure || "N/A",
+            oxygen_saturation: facts.oxygen_saturation || "N/A",
             symptoms: Array.isArray(facts.symptoms) ? facts.symptoms.join(", ") : "",
-            recommendedFollowups: facts.recommendedFollowUps || "None",
-            transcript: facts.full_transcript || "",
+            recommended_followups: facts.recommended_followups || "None",
+            full_transcript: facts.full_transcript || "",
           };
       
           setPatient([patientDataMapped]);
           setResponse(patientData); // optional: you can keep or remove this
         } catch (err) {
-          console.error("Failed to parse medicalSummary:", err);
+          console.error("Failed to parse medical_facts:", err);
         }
       }, []);
 
@@ -121,8 +157,10 @@ export default function PatientPage() {
       const handleConfirm = (patient: Patient) => {
         // Send patient data to backend to be stored in db
         console.log("Preparing to send data to db")
-        fetch("https://45.79.210.59:8000/store-medical-record", {
-        // fetch("http://localhost:8000/store-medical-record", {
+        console.log("This is being sent:")
+        console.log(patient)
+        // fetch("https://45.79.210.59:8000/store-medical-record", {
+        fetch("http://localhost:8000/store-medical-record", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -134,6 +172,7 @@ export default function PatientPage() {
             alert("Patient confirmed!");
             // backend response: 
             console.log(data)
+            localStorage.clear(); // This clears all local storage data.
             router.push("/");
           })
           .catch((error) => {
@@ -188,7 +227,7 @@ export default function PatientPage() {
                   <th className="border p-2">Verify</th>
                   {patient.length > 0 &&
                     Object.keys(patient[0]).map((key) =>
-                      key === "transcript" ? (
+                      key === "full_transcript" ? (
                         <th
                           key={key}
                           className="border p-2 capitalize cursor-pointer bg-gray-600 hover:bg-gray-700"
@@ -212,7 +251,7 @@ export default function PatientPage() {
                     Confirm</button>
                   </td>
                   {Object.entries(p).map(([key, value]) =>
-                    key === "transcript" ? (
+                    key === "full_transcript" ? (
                       showTranscript && (
                         <td key={key} className="border p-2 whitespace-pre-wrap">
                           {renderCell(p, key as keyof Patient)}
@@ -250,33 +289,36 @@ export default function PatientPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="border p-2 rounded-lg w-1/4 shadow-md"
                 />
-                <select
-                    value={selectedGender}
-                    onChange={(e) => setSelectedGender(e.target.value)}
-                    className="border p-2 rounded-lg w-1/4 shadow-md"
-                >
-                    <option value="">All Genders</option>
-                    {genders.map((gender) => (
-                        <option key={gender} value={gender}>
-                            {gender}
-                        </option>
-                    ))}
-                </select>
-                <select
-                    value={selectedCondition}
-                    onChange={(e) => setSelectedCondition(e.target.value)}
-                    className="border p-2 rounded-lg w-1/4 shadow-md"
-                >
-                    <option value="">All Conditions</option>
-                    {conditions.map((condition) => (
-                        <option key={condition} value={condition}>
-                            {condition}
-                        </option>
-                    ))}
-                </select>
+<select
+  value={selectedGender}
+  onChange={(e) => setSelectedGender(e.target.value)}
+  className="border p-2 rounded-lg w-1/4 shadow-md"
+>
+  <option value="">All Genders</option>
+  {genders.map((gender) => (
+    <option key={gender} value={gender}>  {/* Use gender as the unique key */}
+      {gender}
+    </option>
+  ))}
+</select>
+<select
+  value={selectedCondition}
+  onChange={(e) => setSelectedCondition(e.target.value)}
+  className="border p-2 rounded-lg w-1/4 shadow-md"
+>
+{conditions.map((condition, index) => (
+  <option key={index} value={condition}>
+    {condition}
+  </option>
+))}
+
+</select>
             </div>
             {/* Patient Table */}
             <div className="overflow-x-auto">
+            {loading ? (
+            <p className="text-center text-gray-600">Loading confirmed patients...</p>
+            ) : (
                 <table className="w-full border-collapse border border-gray-300 shadow-lg bg-white">
                     <thead>
                     <tr className="bg-blue-500 text-white">
@@ -304,22 +346,22 @@ export default function PatientPage() {
                         filteredPatients.map((patient) => (
                             <tr key={patient.id} className="text-center odd:bg-gray-100 hover:bg-gray-200">
                                 <td className="border p-2">{patient.id}</td>
-                                <td className="border p-2">{patient.name}</td>
+                                <td className="border p-2">{patient.patient_name}</td>
                                 <td className="border p-2">{patient.dob}</td>
                                 <td className="border p-2">{patient.age}</td>
                                 <td className="border p-2">{patient.gender}</td>
-                                <td className="border p-2">{patient.maritalStatus}</td>
+                                <td className="border p-2">{patient.marital_status}</td>
                                 <td className="border p-2">{patient.allergy}</td>
                                 <td className="border p-2">{patient.medication}</td>
-                                <td className="border p-2">{patient.medDosage}</td>
-                                <td className="border p-2">{patient.condition}</td>
-                                <td className="border p-2">{patient.alcohol}</td>
-                                <td className="border p-2">{patient.smoker}</td>
+                                <td className="border p-2">{patient.med_dosage}</td>
+                                <td className="border p-2">{patient.conditions}</td>
+                                <td className="border p-2">{patient.alcohol_use}</td>
+                                <td className="border p-2">{patient.smoking_status}</td>
                                 <td className="border p-2">{patient.temperature}</td>
-                                <td className="border p-2">{patient.bloodPressure}</td>
-                                <td className="border p-2">{patient.oxygenSaturation}</td>
+                                <td className="border p-2">{patient.blood_pressure}</td>
+                                <td className="border p-2">{patient.oxygen_saturation}</td>
                                 <td className="border p-2">{patient.symptoms}</td>
-                                <td className="border p-2">{patient.recommendedFollowups}</td>
+                                <td className="border p-2">{patient.recommended_followups}</td>
                             </tr>
                         ))
                     ) : (
@@ -331,6 +373,7 @@ export default function PatientPage() {
                     )}
                     </tbody>
                 </table>
+            )}
             </div>
         </div>
     );
