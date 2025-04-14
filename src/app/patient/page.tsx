@@ -80,7 +80,7 @@ export default function PatientPage() {
 
     useEffect(() => {
         // Fetch data from your backend
-        fetch("https://45.79.210.59:8000/get-medical-records") // or http://localhost:8000
+        fetch("https://omscs-ihi-group-41-server.com/get-medical-records")
         //   fetch("http://localhost:8000/get-medical-records")
           .then(response => response.json())
           .then(data => {
@@ -159,7 +159,7 @@ export default function PatientPage() {
         console.log("Preparing to send data to db")
         console.log("This is being sent:")
         console.log(patient)
-        fetch("https://45.79.210.59:8000/store-medical-record", {
+        fetch("https://omscs-ihi-group-41-server.com/store-medical-record", {
         // fetch("http://localhost:8000/store-medical-record", {
           method: "POST",
           headers: {
