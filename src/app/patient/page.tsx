@@ -71,11 +71,13 @@ export default function PatientPage() {
     
 
     useEffect(() => {
-        const stored = localStorage.getItem("medical_facts");
-        if (stored) {
-            setResponse(stored);
-        }
-    }, []);
+      const stored = localStorage.getItem("medical_facts");
+      if (stored) {
+        setResponse(stored);
+      } else {
+        setResponse(null); // Reset state when localStorage is cleared
+      }
+    }, [response]);
 
 
     useEffect(() => {
@@ -138,7 +140,7 @@ export default function PatientPage() {
           };
       
           setPatient([patientDataMapped]);
-          setResponse(patientData); // optional: you can keep or remove this
+          // setResponse(patientData); // optional: you can keep or remove this
         } catch (err) {
           console.error("Failed to parse medical_facts:", err);
         }
