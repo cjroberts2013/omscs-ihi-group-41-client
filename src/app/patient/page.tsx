@@ -118,7 +118,7 @@ export default function PatientPage() {
       
           const patientDataMapped: Patient = {
             id: 1, // you can generate a dynamic ID if needed
-            patient_name: facts.patientName,
+            patient_name: facts.patient_name,
             dob: facts.dob,
             age: facts.age,
             gender: facts.gender.charAt(0).toUpperCase() + facts.gender.slice(1),
