@@ -269,7 +269,7 @@ export default function PatientPage() {
             </table>
             <div className="mt-4 flex justify-center">
           <button
-            onClick={() => {localStorage.removeItem("medicalSummary"); setPatient([]);
+            onClick={() => {localStorage.removeItem("medical_facts"); setPatient([]);
               setResponse(null);
               alert("Patient data has been reset.");
               router.push("/recording");
