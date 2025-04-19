@@ -172,7 +172,7 @@ export default function PatientPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(patient),
+          body: JSON.stringify(payload),
         })
           .then((response) => response.json())
           .then((data) => {
