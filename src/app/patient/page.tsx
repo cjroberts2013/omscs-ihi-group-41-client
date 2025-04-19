@@ -159,8 +159,13 @@ export default function PatientPage() {
       const handleConfirm = (patient: Patient) => {
         // Send patient data to backend to be stored in db
         console.log("Preparing to send data to db")
-        console.log("This is being sent:")
-        console.log(patient)
+          // Nest patient object inside "medical_facts"
+        const payload = {
+          medical_facts: patient,
+        };
+        console.log("Preparing to send data to db");
+        console.log("This is being sent:");
+        console.log(payload);
         fetch("https://omscs-ihi-group-41-server.com/store-medical-record", {
         // fetch("http://localhost:8000/store-medical-record", {
           method: "POST",
